@@ -17,6 +17,7 @@ module Fluent
         config_param :stream_name,            :string, :default => nil
         config_param :partition_key,          :string, :default => nil
         config_param :partition_key_proc,     :string, :default => nil
+        config_param :partition_key_static, :string, :default => nil
         config_param :explicit_hash_key,      :string, :default => nil
         config_param :explicit_hash_key_proc, :string, :default => nil
 
@@ -35,10 +36,14 @@ module Fluent
                 end
             end
 
-            unless @partition_key or @partition_key_proc
-                raise ConfigError, "'partition_key' or 'partition_key_proc' is required"
+            unless @partition_key or @partition_key_proc or @partition_key_static
+                raise ConfigError, "'partition_key' or 'partition_key_proc' or 'partition_key_static' is required"
             end
-
+            
+            if @partition_key_static
+                @partition_key_static = eval(@partition_key_static)
+            end
+            
             if @partition_key_proc
                 @partition_key_proc = eval(@partition_key_proc)
             end
@@ -68,7 +73,7 @@ module Fluent
             data = {
                 :stream_name => @stream_name,
                 :data => encode64(record.to_json),
-                :partition_key => get_key(:partition_key,record)
+                :partition_key => @partition_key_static or get_key(:partition_key,record)
             }
 
             if @explicit_hash_key or @explicit_hash_key_proc
