@@ -29,7 +29,7 @@ module Fluent
         def configure(conf)
             super
 
-            [:aws_key_id, :aws_sec_key, :region, :stream_name].each do |name|
+            [:region,:stream_name].each do |name|
                 unless self.instance_variable_get("@#{name}")
                     raise ConfigError, "'#{name}' is required"
                 end
