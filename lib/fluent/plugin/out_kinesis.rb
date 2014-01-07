@@ -73,7 +73,7 @@ module Fluent
             data = {
                 :stream_name => @stream_name,
                 :data => encode64(record.to_json),
-                :partition_key => @partition_key_static or get_key(:partition_key,record)
+                :partition_key => @partition_key_static || get_key(:partition_key,record)
             }
 
             if @explicit_hash_key or @explicit_hash_key_proc
